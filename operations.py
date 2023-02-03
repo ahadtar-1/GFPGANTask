@@ -9,19 +9,18 @@ from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 from basicsr.utils.download_util import load_file_from_url
 
-modelUrl = 'https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth'
-uploadsPic = '/home/ekkelai/Documents/Tasks/GFPGAN Task/Temppics'
+fileUrl = ['https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth']
+picUploads = 'Temppics'
 modelDir = 'ModelDirectory'
 
 
-def upsampling_image(filePath: str, scale: int)-> str:
+def upsampling_image(filePath: str)-> str:
     """
     The function upsamples an image
 
     Parameters
     ----------
     str
-    int
 
     Returns
     -------
@@ -29,17 +28,14 @@ def upsampling_image(filePath: str, scale: int)-> str:
 
     """
 
-
     newImage = cv2.imread(filePath)
-    modelPath = load_file_from_url(modelUrl, os.path.join(modelDir, 'weights'), progress = True, file_name = None)
-    print(modelPath)
-    model = RRDBNet(num_in_ch = 3, num_out_ch = 3, num_feat = 64, num_block = 23, num_grow_ch = 32, scale = scale)
-    print(model)
-    upSampler = RealESRGANer(scale, modelPath, model)
-    outputImage = upSampler.enhance(newImage, scale)
-    fileName = 'newimg.jpg'
-    cv2.imwrite('newimg.jpg', outputImage)
-    cv2.imshow(outputImage)
-    path = os.path.join(uploadsPic, fileName)
-    print(path)
+    model = RRDBNet(num_in_ch = 3, num_out_ch = 3, num_feat = 64, num_block = 23, num_grow_ch = 32, scale = 4)
+    modelPath = load_file_from_url(url = fileUrl[0], model_dir = modelDir, progress = True, file_name = None)
+    #print(modelPath)
+    #print(model)
+    upSampler = RealESRGANer(scale = 4, model_path = modelPath, dni_weight = 1, model = model)
+    outputImage = upSampler.enhance(newImage, 4)
+    fileName = 'upsampledimg.jpg'
+    cv2.imwrite('upsampledimg.jpg', outputImage[0])
+    path = os.path.join("", fileName)
     return path
